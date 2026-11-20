@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A static prototype for a tinnitus self-management companion designed with older adults in mind.">
+  <title>Tinnitus Companion</title>
+  <style>
+    :root { --navy:#15364f; --teal:#087a73; --mint:#e8f7f3; --ink:#1d2d38; --muted:#62737e; --line:#d8e6e3; --coral:#b9483e; --coral-bg:#fff0ed; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#f4f8f7; color:var(--ink); font:17px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    button,input { font:inherit; } button { cursor:pointer; }
+    button:focus-visible,input:focus-visible { outline:4px solid #84d9ce; outline-offset:3px; }
+    .app { max-width:1150px; min-height:100vh; margin:auto; background:#f8fbfa; display:grid; grid-template-columns:230px 1fr; }
+    aside { background:var(--navy); color:#fff; padding:27px 16px; display:flex; flex-direction:column; gap:25px; }
+    .brand { padding:0 10px; }.mark { width:44px; height:44px; display:grid; place-items:center; border-radius:14px; background:#bcefe8; color:#087a73; font-size:25px; }
+    h1 { font-size:21px; margin:10px 0 2px; }.brand p { margin:0; color:#c2d3dc; font-size:14px; }
+    nav { display:grid; gap:7px; }.nav { border:0; background:transparent; color:#d8e7ee; padding:12px; border-radius:11px; text-align:left; font-weight:800; font-size:16px; }
+    .nav:hover,.nav.active { background:#28536d; color:#fff; }.side-note { margin-top:auto; padding:14px; border:1px solid #406981; border-radius:14px; background:#244961; color:#eaf4f7; font-size:13px; }.side-note b { display:block; margin-bottom:4px; }
+    .topbar { min-height:74px; background:#fff; border-bottom:1px solid var(--line); padding:14px 31px; display:flex; align-items:center; justify-content:space-between; gap:14px; }.topbar p { margin:0; color:var(--muted); font-size:14px; }.topbar b { color:var(--navy); }
+    .safety { border:1px solid #efa99f; background:var(--coral-bg); color:#922f27; border-radius:11px; padding:10px 13px; font-weight:850; }
+    .page { display:none; max-width:940px; padding:32px; margin:auto; }.page.active { display:block; animation:fade .2s ease; } @keyframes fade { from { opacity:.4; transform:translateY(5px); } to { opacity:1; transform:none; } }
+    .eyebrow { margin:0 0 7px; text-transform:uppercase; letter-spacing:1.2px; font-size:12px; font-weight:900; color:var(--teal); } h2 { font-size:34px; line-height:1.12; letter-spacing:-1px; color:var(--navy); margin:0 0 8px; } h3 { font-size:19px; color:var(--navy); margin:0 0 6px; }.lead { color:var(--muted); max-width:720px; margin:0 0 21px; }
+    .hero { border:1px solid #d2ebe6; background:linear-gradient(125deg,#def6f1,#fff9e9); padding:27px; border-radius:21px; display:grid; grid-template-columns:1.3fr .7fr; gap:18px; }.hero h2 { font-size:30px; }.actions { display:flex; gap:9px; flex-wrap:wrap; margin-top:17px; }
+    .primary,.secondary,.quiet,.danger,.sound-card,.option { border-radius:11px; padding:11px 14px; font-weight:850; transition:.15s; }.primary { border:0; background:var(--teal); color:#fff; }.primary:hover { background:#05645e; }.secondary { background:#fff; color:#05645e; border:1px solid #9bd8d0; }.quiet { border:1px solid var(--line); background:#eef4f3; color:var(--navy); }.danger { border:1px solid #eea79e; background:var(--coral-bg); color:#962f28; }
+    .score { border:1px solid #c7e4de; background:#fff; border-radius:17px; padding:17px; text-align:center; }.score small { color:var(--muted); font-weight:800; }.score b { display:block; font-size:41px; line-height:1.1; color:var(--teal); margin:6px 0; }.bar { height:9px; border-radius:10px; background:#e5efed; overflow:hidden; }.bar i { display:block; height:100%; width:65%; border-radius:10px; background:linear-gradient(90deg,#7dd3c8,var(--teal)); }
+    .section-head { margin:28px 0 12px; }.section-head p { margin:2px 0 0; color:var(--muted); font-size:14px; }.grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:13px; }.card,.panel { background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px; }.card p,.panel p { font-size:14px; color:var(--muted); margin:0 0 10px; }.icon { font-size:28px; margin-bottom:8px; }.text-btn { border:0; background:transparent; color:#05645e; font-weight:850; padding:0; }.text-btn:hover { text-decoration:underline; }
+    .notice { display:flex; gap:10px; padding:14px; margin-top:17px; border:1px solid #efdeb2; background:#fff9e9; border-radius:13px; color:#604d27; font-size:14px; }.status { border:1px solid #bde5dd; background:#ecfaf6; color:#135852; border-radius:13px; padding:13px 15px; font-size:14px; margin:0 0 15px; }
+    .sound-list { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }.sound-card { border:2px solid var(--line); background:#fff; text-align:left; }.sound-card:hover,.sound-card.selected { border-color:var(--teal); background:#f4fdfb; }.sound-card .emoji { font-size:28px; }.sound-card b { display:block; color:var(--navy); margin:5px 0 1px; }.sound-card small { color:var(--muted); }
+    .player { margin-top:17px; border-radius:18px; padding:21px; background:var(--navy); color:white; }.player h3 { color:#fff; }.player p { margin:4px 0 13px; color:#c1d5e1; font-size:14px; } audio { width:100%; height:42px; margin:4px 0 14px; display:block; }.controls { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }.controls label { font-size:13px; font-weight:850; color:#dcebf2; }.controls input { accent-color:#8ce1d4; width:180px; }.controls output { min-width:36px; color:#fff; font-weight:800; }.playback-note { margin-top:14px; padding:11px 12px; border:1px solid #3b6479; border-radius:10px; color:#d4e8f1; font-size:13px; }
+    .check-layout { display:grid; grid-template-columns:1.25fr .75fr; gap:17px; }.label { display:block; font-weight:900; color:var(--navy); margin-bottom:7px; }.pill { float:right; border-radius:9px; padding:3px 10px; background:var(--mint); color:#05645e; }.range { width:100%; height:28px; accent-color:var(--teal); }.range-labels { display:flex; justify-content:space-between; font-size:13px; color:var(--muted); }.options { display:flex; gap:8px; flex-wrap:wrap; }.option { background:#f4f8f7; color:#52646e; border:1px solid var(--line); font-size:14px; }.option.selected { background:var(--mint); border-color:#71c5ba; color:#05645e; }.flags { display:grid; gap:8px; margin:12px 0 17px; }.flag { display:flex; gap:9px; border:1px solid #efcfca; background:#fff9f8; padding:10px; border-radius:10px; font-size:14px; color:#5a3b37; }.flag input { width:18px; height:18px; accent-color:var(--coral); }.result { padding:14px; border:1px solid #bde4dc; background:var(--mint); border-radius:12px; margin-top:15px; }.result.urgent { border-color:#efa99f; background:var(--coral-bg); color:#702c25; }.result p { margin:4px 0 0; }
+    .module { display:flex; gap:14px; align-items:center; border:1px solid var(--line); background:#fff; border-radius:15px; padding:16px; margin-bottom:10px; }.num { width:40px; height:40px; display:grid; place-items:center; flex:0 0 40px; background:var(--mint); color:#05645e; border-radius:12px; font-weight:900; }.module.done .num { background:#e0f1cb; color:#356820; }.copy { flex:1; }.module h3 { font-size:17px; margin:0; }.module p { font-size:14px; color:var(--muted); margin:3px 0 0; }.lesson { display:none; border:1px solid #f0dcad; background:#fffdf8; border-radius:15px; padding:18px; margin-top:15px; }.lesson.active { display:block; }.prompt { border-left:4px solid #e4a83a; padding:12px; background:#fff; font-weight:750; color:#55452b; }
+    .report { background:#fff; border:1px solid var(--line); border-radius:18px; overflow:hidden; }.report-head { padding:19px 21px; background:var(--navy); color:#fff; }.report-head h3 { color:#fff; margin:0; }.report-head p { margin:3px 0 0; color:#cbdde7; font-size:14px; }.report-body { padding:20px; }.report-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; }.report-item { padding:12px; border-radius:11px; background:#f3f8f7; }.report-item b { display:block; color:#05645e; font-size:21px; }.report-item span { font-size:13px; color:var(--muted); }
+    .modal { position:fixed; inset:0; z-index:10; padding:18px; background:#102a3ed0; display:grid; place-items:center; }.modal[aria-hidden="true"] { display:none; }.modal-box { position:relative; max-width:650px; background:#fff; border-radius:21px; padding:26px; }.close { position:absolute; right:14px; top:14px; border:0; border-radius:10px; width:35px; height:35px; font-size:20px; }.urgent-list { list-style:none; padding:0; display:grid; gap:8px; }.urgent-list li { padding:11px; border-radius:10px; background:var(--coral-bg); color:#6a2e28; font-size:14px; }.urgent-list b { color:#992e26; }
+    @media (max-width:800px) { .app { display:block; } aside { position:sticky; top:0; z-index:4; padding:13px; display:block; }.brand { display:flex; align-items:center; gap:9px; }.mark { width:35px; height:35px; font-size:20px; }.brand h1 { margin:0; font-size:17px; }.brand p,.side-note { display:none; } nav { display:flex; overflow:auto; gap:4px; margin-top:11px; }.nav { font-size:13px; padding:9px; white-space:nowrap; }.topbar { padding:13px 18px; }.topbar p { display:none; }.page { padding:24px 18px; }.hero,.check-layout { grid-template-columns:1fr; }.score { display:none; } }
+    @media (max-width:560px) { h2,.hero h2 { font-size:27px; }.grid3,.sound-list,.report-grid { grid-template-columns:1fr; }.module { align-items:flex-start; }.module button { font-size:13px; padding:9px; }.controls input { flex:1; min-width:115px; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand"><div class="mark">◌</div><div><h1>Tinnitus Companion</h1><p>Designed with 55+ in mind</p></div></div>
+      <nav aria-label="Main navigation">
+        <button class="nav active" data-view="home">⌂ &nbsp; Home</button>
+        <button class="nav" data-view="sound">≈ &nbsp; Calm sounds</button>
+        <button class="nav" data-view="checkin">✓ &nbsp; Check today</button>
+        <button class="nav" data-view="plan">☀ &nbsp; My plan</button>
+        <button class="nav" data-view="summary">↗ &nbsp; Clinician summary</button>
+      </nav>
+      <div class="side-note"><b>Support, not diagnosis.</b>Comfort, sleep, and daily function—not a promise to cure tinnitus.</div>
+    </aside>
+
+    <main>
+      <header class="topbar"><p><b>Good afternoon, Alex.</b> Small, steady steps can make today easier.</p><button class="safety" onclick="openSafety()">⚠ Safety &amp; urgent symptoms</button></header>
+
+      <section class="page active" id="home">
+        <p class="eyebrow">Your calm space</p>
+        <div class="hero">
+          <div><p class="eyebrow">Today’s focus</p><h2>Help your brain give the ringing less attention.</h2><p class="lead">Use a brief check-in, a gentle sound, or a small coping practice.</p><div class="actions"><button class="primary" onclick="showView('sound')">Try calm sounds</button><button class="secondary" onclick="showView('checkin')">Check in for 1 minute</button></div></div>
+          <div class="score"><small>Today’s impact rating</small><b id="homeImpact">6/10</b><div class="bar"><i id="impactBar"></i></div><small>Track change—not perfection.</small></div>
+        </div>
+        <div class="section-head"><h3>Choose one small step</h3><p>You do not have to do everything at once.</p></div>
+        <div class="grid3">
+          <article class="card"><div class="icon">🔊</div><h3>Calm sounds</h3><p>Try distinct synthetic fan, rain, or warm-noise soundscapes.</p><button class="text-btn" onclick="showView('sound')">Open sound player →</button></article>
+          <article class="card"><div class="icon">🧠</div><h3>Shift attention</h3><p>Practice a helpful response when tinnitus pulls your focus.</p><button class="text-btn" onclick="showView('plan')">Continue my plan →</button></article>
+          <article class="card"><div class="icon">🩺</div><h3>Prepare for care</h3><p>Make a short, clear summary for an ENT or audiologist.</p><button class="text-btn" onclick="showView('summary')">View summary →</button></article>
+        </div>
+        <div class="notice"><b>ⓘ</b><div>Use low, comfortable volume. Stop immediately if any sound is unpleasant or makes tinnitus feel worse.</div></div>
+      </section>
+
+      <section class="page" id="sound">
+        <p class="eyebrow">Calm sounds</p>
+        <h2>Choose a distinct sound texture.</h2>
+        <p class="lead">Soft fan includes a gentle motor rhythm and air turbulence. Warm noise is deeper and has no repeating motor tone.</p>
+        <div class="status" id="soundStatus"><b>Ready:</b> Select a sound, press Play, then use the separate Stop button whenever you want.</div>
+        <div class="sound-list">
+          <button class="sound-card selected" data-sound="fan"><span class="emoji">〰</span><b>Soft fan</b><small>Airy noise + quiet 180 Hz motor rhythm</small></button>
+          <button class="sound-card" data-sound="rain"><span class="emoji">☂</span><b>Gentle rain</b><small>Soft rain bed + irregular droplets</small></button>
+          <button class="sound-card" data-sound="warm"><span class="emoji">◒</span><b>Warm noise</b><small>Deep hum-free brown-noise texture</small></button>
+        </div>
+        <div class="player">
+          <h3 id="soundTitle">Soft fan — synthetic demo</h3>
+          <p id="soundDescription">Airy turbulence plus a quiet, repeating motor tone. This is intentionally different from warm noise.</p>
+          <audio id="audioPlayer" controls loop preload="metadata" aria-label="Selected sound player"></audio>
+          <div class="controls"><button class="secondary" id="playButton" onclick="playSelected()">▶ Play</button><button class="danger" id="stopButton" onclick="stopSelected()" disabled>■ Stop</button><label for="volume">App volume</label><input id="volume" type="range" min="0" max="30" value="12"><output id="volumeValue">12%</output></div>
+          <div class="playback-note" id="playbackNote">If the player timeline moves but you hear nothing, check the browser tab and device volume.</div>
+        </div>
+        <div class="notice"><b>♡</b><div>These are synthetic comfort sounds, not medical treatments. Keep volume low and use a speaker if that is more comfortable than headphones.</div></div>
+      </section>
+
+      <section class="page" id="checkin">
+        <p class="eyebrow">One minute</p><h2>How is tinnitus affecting you today?</h2><p class="lead">This is a safety and coping check—not a diagnosis.</p>
+        <div class="check-layout">
+          <div class="panel">
+            <label class="label">How disruptive does it feel right now? <span class="pill" id="impactNumber">6</span></label><input class="range" id="impact" type="range" min="0" max="10" value="6"><div class="range-labels"><span>Not noticeable</span><span>Very disruptive</span></div>
+            <div style="margin-top:22px"><label class="label">How was your sleep last night?</label><div class="options"><button class="option" data-sleep="Restful">Restful</button><button class="option selected" data-sleep="Okay">Okay</button><button class="option" data-sleep="Poor">Poor</button></div></div>
+            <div style="margin-top:22px"><label class="label">Any of these new symptoms today?</label><div class="flags"><label class="flag"><input class="flag-check" type="checkbox"> Sudden new hearing loss or rapidly worsening hearing</label><label class="flag"><input class="flag-check" type="checkbox"> New face weakness, speech/vision changes, or severe uncontrolled dizziness</label><label class="flag"><input class="flag-check" type="checkbox"> Feeling unsafe, hopeless, or unable to cope</label><label class="flag"><input class="flag-check" type="checkbox"> Persistent heartbeat-like or one-sided sound</label></div></div>
+            <button class="primary" onclick="saveCheckin()">Save today’s check-in</button><div id="checkinResult" aria-live="polite"></div>
+          </div>
+          <div class="panel"><p class="eyebrow">Suggested next step</p><h3>Use sound only if it feels comfortable.</h3><p>For some people, low-level neutral sound helps with sleep or concentration. Stop if it bothers you.</p><button class="text-btn" onclick="showView('sound')">Open sound player →</button></div>
+        </div>
+      </section>
+
+      <section class="page" id="plan">
+        <p class="eyebrow">Your support plan</p><h2>Practice skills that make tinnitus less disruptive.</h2><p class="lead">These short lessons complement—not replace—care from an ENT, audiologist, or qualified therapist.</p>
+        <div class="module done" id="module1"><div class="num">✓</div><div class="copy"><h3>Understand the alarm cycle</h3><p>Why stress, sleep, and attention can make tinnitus feel louder.</p></div><button class="quiet" onclick="openLesson(1)">Review</button></div>
+        <div class="module" id="module2"><div class="num">2</div><div class="copy"><h3>Practice a helpful response</h3><p>Notice the sound, soften the body, then refocus.</p></div><button class="primary" onclick="openLesson(2)">Start lesson</button></div>
+        <div class="module" id="module3"><div class="num">3</div><div class="copy"><h3>Make a sleep-friendly routine</h3><p>Build a small evening plan for noticeable tinnitus.</p></div><button class="quiet" onclick="openLesson(3)">Preview</button></div>
+        <div class="lesson" id="lessonBox"></div>
+      </section>
+
+      <section class="page" id="summary">
+        <p class="eyebrow">Bring clearer information to care</p><h2>Your clinician summary</h2><p class="lead">A clear report can help an ENT, audiologist, or primary-care clinician understand changes over time.</p>
+        <div class="report"><div class="report-head"><h3>Tinnitus Companion — visit summary</h3><p>Educational prototype • User-controlled sharing</p></div><div class="report-body"><div class="report-grid"><div class="report-item"><b id="summaryImpact">6 / 10</b><span>Latest impact rating</span></div><div class="report-item"><b id="summarySleep">Okay</b><span>Latest sleep report</span></div><div class="report-item"><b id="summarySound">Soft fan</b><span>Selected sound option</span></div></div><div style="border-top:1px solid var(--line);padding-top:15px;margin-top:17px"><b>Questions to discuss at my visit</b><ul style="font-size:14px;color:#52636c;margin:7px 0"><li>Could a hearing evaluation or hearing aid help in my situation?</li><li>Are any health conditions or medicines worth reviewing?</li><li>Would tinnitus-focused CBT or counseling be appropriate?</li></ul></div><button class="primary" onclick="refreshSummary()">Refresh summary</button><button class="quiet" style="margin-left:6px" onclick="window.print()">Print summary</button></div></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="safetyModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-box"><button class="close" onclick="closeSafety()" aria-label="Close">×</button><p class="eyebrow" style="color:var(--coral)">Safety first</p><h2 style="font-size:28px">When an app is not enough</h2><p class="lead">Do not rely on this tool alone if symptoms are new, sudden, or severe.</p><ul class="urgent-list"><li><b>Seek urgent medical assessment:</b> sudden hearing loss or rapidly worsening hearing.</li><li><b>Get emergency help now:</b> new face weakness, speech/vision changes, or severe uncontrolled dizziness.</li><li><b>Reach emergency or crisis support:</b> if you feel unsafe, hopeless, or may harm yourself.</li><li><b>Arrange ENT/audiology evaluation:</b> persistent heartbeat-like tinnitus, one-sided tinnitus, or unequal hearing.</li></ul><button class="primary" onclick="closeSafety()">I understand</button></div>
+  </div>
+
+  <script>
+    const state = { impact:6, sleep:"Okay", sound:"fan", done:new Set([1]) };
+    const RATE = 22050;
+    const player = document.getElementById("audioPlayer");
+    let currentUrl = "";
+
+    document.querySelectorAll(".nav").forEach(button => button.addEventListener("click", () => showView(button.dataset.view)));
+    function showView(id) { document.querySelectorAll(".page").forEach(page => page.classList.remove("active")); document.querySelectorAll(".nav").forEach(button => button.classList.toggle("active", button.dataset.view === id)); document.getElementById(id).classList.add("active"); window.scrollTo({top:0,behavior:"smooth"}); }
+    function writeText(view, offset, text) { for (let i = 0; i < text.length; i++) view.setUint8(offset + i, text.charCodeAt(i)); }
+    function toWavUrl(samples) {
+      let peak = 0; for (let i = 0; i < samples.length; i++) peak = Math.max(peak, Math.abs(samples[i]));
+      const scale = peak ? Math.min(.58 / peak, 1) : 1;
+      const buffer = new ArrayBuffer(44 + samples.length * 2); const view = new DataView(buffer);
+      writeText(view,0,"RIFF"); view.setUint32(4,36 + samples.length * 2,true); writeText(view,8,"WAVE"); writeText(view,12,"fmt "); view.setUint32(16,16,true); view.setUint16(20,1,true); view.setUint16(22,1,true); view.setUint32(24,RATE,true); view.setUint32(28,RATE * 2,true); view.setUint16(32,2,true); view.setUint16(34,16,true); writeText(view,36,"data"); view.setUint32(40,samples.length * 2,true);
+      for (let i = 0; i < samples.length; i++) { const value = Math.max(-1, Math.min(1, samples[i] * scale)); view.setInt16(44 + i * 2, value < 0 ? value * 32768 : value * 32767, true); }
+      return URL.createObjectURL(new Blob([buffer], {type:"audio/wav"}));
+    }
+    function addFade(data) { const fade = Math.floor(RATE * .03); for (let i = 0; i < fade; i++) { data[i] *= i / fade; data[data.length - 1 - i] *= i / fade; } return data; }
+
+    // Airy fan: broad air turbulence + a gentle repeating motor tone.
+    function fanSamples(seconds = 7) { const data = new Float32Array(RATE * seconds); let wind = 0; for (let i = 0; i < data.length; i++) { const t = i / RATE; const white = Math.random() * 2 - 1; wind = .68 * wind + .32 * white; const air = wind * .16 * (.88 + .12 * Math.sin(2 * Math.PI * .23 * t)); const motor = Math.sin(2 * Math.PI * 180 * t) * .045 + Math.sin(2 * Math.PI * 360 * t) * .011; data[i] = air + motor; } return addFade(data); }
+    // Rain: soft noise field + random short droplet bursts.
+    function rainSamples(seconds = 7) { const data = new Float32Array(RATE * seconds); for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * .045; for (let drop = 0; drop < 310; drop++) { const start = Math.floor(Math.random() * data.length); const length = 50 + Math.floor(Math.random() * 700); const strength = .05 + Math.random() * .2; for (let j = 0; j < length && start + j < data.length; j++) { const envelope = Math.exp(-j / (length * .17)); data[start + j] += (Math.random() * 2 - 1) * strength * envelope; } } return addFade(data); }
+    // Warm noise: deep hum-free brown noise with no repeating motor rhythm.
+    function warmSamples(seconds = 7) { const data = new Float32Array(RATE * seconds); let deep = 0, slow = 0; for (let i = 0; i < data.length; i++) { const white = Math.random() * 2 - 1; deep = .995 * deep + .005 * white; slow = .999 * slow + .001 * white; data[i] = deep * 2.3 + slow * .5; } return addFade(data); }
+
+    const sounds = {
+      fan: { label:"Soft fan", title:"Soft fan — synthetic demo", desc:"Airy turbulence plus a gentle 180 Hz motor rhythm. It should sound distinctly more mechanical than warm noise.", make:fanSamples },
+      rain: { label:"Gentle rain", title:"Gentle rain — synthetic demo", desc:"A soft rain bed with irregular light droplets.", make:rainSamples },
+      warm: { label:"Warm noise", title:"Warm noise — synthetic demo", desc:"Deep, hum-free brown noise. It has no repeating motor rhythm.", make:warmSamples }
+    };
+    function loadSound() { const sound = sounds[state.sound]; stopSelected(false); if (currentUrl) URL.revokeObjectURL(currentUrl); currentUrl = toWavUrl(sound.make()); player.src = currentUrl; player.volume = Number(document.getElementById("volume").value) / 100; player.load(); document.getElementById("soundTitle").textContent = sound.title; document.getElementById("soundDescription").textContent = sound.desc; document.getElementById("soundStatus").innerHTML = `<b>${sound.label} loaded.</b> Press Play; Stop will return it to the beginning.`; }
+    document.querySelectorAll(".sound-card").forEach(card => card.addEventListener("click", () => { state.sound = card.dataset.sound; document.querySelectorAll(".sound-card").forEach(item => item.classList.remove("selected")); card.classList.add("selected"); loadSound(); refreshSummary(); }));
+    document.getElementById("volume").addEventListener("input", event => { document.getElementById("volumeValue").textContent = event.target.value + "%"; player.volume = Number(event.target.value) / 100; });
+    async function playSelected() { try { await player.play(); document.getElementById("playButton").disabled = true; document.getElementById("stopButton").disabled = false; document.getElementById("soundStatus").innerHTML = `<b>Playing ${sounds[state.sound].label}.</b> Keep volume low; use Stop whenever you want.`; } catch { document.getElementById("soundStatus").innerHTML = "<b>Playback was blocked.</b> This preview browser may not allow audio. Try the native player once; if it still fails, the preview environment is blocking sound."; } }
+    function stopSelected(updateMessage = true) { player.pause(); try { player.currentTime = 0; } catch {} document.getElementById("playButton").disabled = false; document.getElementById("stopButton").disabled = true; if (updateMessage) document.getElementById("soundStatus").innerHTML = `<b>Stopped.</b> ${sounds[state.sound].label} is reset to the beginning.`; }
+    player.addEventListener("play", () => { document.getElementById("playButton").disabled = true; document.getElementById("stopButton").disabled = false; });
+    player.addEventListener("pause", () => { if (!player.ended) document.getElementById("playButton").disabled = false; });
+    player.addEventListener("error", () => { document.getElementById("soundStatus").innerHTML = "<b>Audio could not load.</b> This browser may block generated local audio."; });
+
+    const impact = document.getElementById("impact"); impact.addEventListener("input", () => { state.impact = Number(impact.value); document.getElementById("impactNumber").textContent = state.impact; });
+    document.querySelectorAll("[data-sleep]").forEach(button => button.addEventListener("click", () => { state.sleep = button.dataset.sleep; document.querySelectorAll("[data-sleep]").forEach(item => item.classList.remove("selected")); button.classList.add("selected"); }));
+    function saveCheckin() { const flagged = document.querySelectorAll(".flag-check:checked").length > 0; document.getElementById("checkinResult").innerHTML = flagged ? '<div class="result urgent"><b>Please get clinical help promptly.</b><p>You selected a symptom that should not be managed only with an app.</p><button class="secondary" style="margin-top:8px" onclick="openSafety()">Review safety guidance</button></div>' : '<div class="result"><b>Check-in saved.</b><p>Thank you for checking in. A calm sound or short coping exercise may be a helpful next step.</p></div>'; refreshSummary(); }
+    const lessons = { 1:["Understand the alarm cycle","Tinnitus can feel louder when the brain treats it as danger. Stress, poor sleep, and checking for the sound can keep that alarm active.","Try saying: ‘I notice this sound. I am safe right now. I can return attention to what I was doing.’"], 2:["Practice a helpful response","Instead of fighting the sound, practice three steps: notice it, soften the body, and choose one meaningful next action.","Drop your shoulders, take one slow breath, then name one activity you want to return to."], 3:["Make a sleep-friendly routine","A predictable evening routine can lower stress and attention given to tinnitus at bedtime.","Tonight, dim lights and use low-volume sound only if it feels comfortable."] };
+    function openLesson(number) { const [title,text,prompt] = lessons[number]; const box = document.getElementById("lessonBox"); box.innerHTML = `<p class="eyebrow">Short lesson</p><h3>${title}</h3><p>${text}</p><div class="prompt">${prompt}</div><button class="primary" style="margin-top:15px" onclick="finishLesson(${number})">Mark lesson complete</button>`; box.classList.add("active"); }
+    function finishLesson(number) { state.done.add(number); const module = document.getElementById("module" + number); module.classList.add("done"); module.querySelector(".num").textContent = "✓"; module.querySelector("button").textContent = "Review"; document.getElementById("lessonBox").innerHTML = '<div class="result"><b>Nice work.</b><p>Small practice sessions can make coping skills easier to use.</p></div>'; }
+    function refreshSummary() { document.getElementById("homeImpact").textContent = state.impact + "/10"; document.getElementById("impactBar").style.width = Math.max(12, 100 - state.impact * 7) + "%"; document.getElementById("summaryImpact").textContent = state.impact + " / 10"; document.getElementById("summarySleep").textContent = state.sleep; document.getElementById("summarySound").textContent = sounds[state.sound].label; }
+    function openSafety() { document.getElementById("safetyModal").setAttribute("aria-hidden","false"); } function closeSafety() { document.getElementById("safetyModal").setAttribute("aria-hidden","true"); } document.getElementById("safetyModal").addEventListener("click", event => { if (event.target.id === "safetyModal") closeSafety(); });
+    loadSound(); refreshSummary();
+  </script>
+</body>
+</html>
