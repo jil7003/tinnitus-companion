@@ -70,4 +70,4 @@ Before presenting this as a clinical product, obtain review from qualified clini
 
 ## License
 
-No license has been selected yet. Before making the repository public for reuse by others, choose a suitable open-source or proprietary license.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
